@@ -31,3 +31,63 @@ exports.createTransaction = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+exports.getTransactions = async (req, res) => {
+  try {
+    // To all transactions where the 'user' field matches the ID 
+    const transactions = await Transaction.find({ 
+      user: req.user.id }).sort({ timestamp: -1 });
+
+    res.json(transactions);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch transactions" });
+  }
+};
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const { id } = req.params; // The ID of the transaction to delete
+    
+    //  delete the transaction ONLY IF it belongs to the logged-in user
+    const deleted = await Transaction.findOneAndDelete({ _id: id, user: req.user.id });
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Transaction not found or unauthorized" });
+    }
+
+    res.json({ message: "Transaction deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+exports.updateTransaction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // update the fields provided in req.body
+    const updated = await Transaction.findOneAndUpdate(
+      { _id: id, user: req.user.id },
+      { $set: req.body },
+      { new: true } 
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Transaction not found or unauthorized" });
+    }
+
+    res.json({ message: "Transaction updated successfully", transaction: updated });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+exports.getTransactionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findOne({ _id: id, user: req.user.id });
+
+    if (!transaction) {
+      return res.status(404).json({ error: "Transaction not found" });
+    }
+
+    res.json(transaction);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
