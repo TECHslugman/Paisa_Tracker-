@@ -1,25 +1,30 @@
-require('dotenv').config(); // Load environment variables first
+require('dotenv').config();
 const express = require('express');
-const connectDB = require('../src/config/db'); // Import the DB connection function
+const connectDB = require('./config/db'); // Ensure this path is correct
+const authRoutes = require('./routes/auth.route'); // Ensure this path is correct
 
 const app = express();
+app.use((req, res, next) => {
+    console.log(`DEBUG: Request received at ${req.path}`);
+    next();
+});
 const PORT = process.env.PORT || 3000;
 
-// 1. Initialize Database Connection
+// 1. Connect to DB
 connectDB();
 
-// 2. Middleware to parse incoming JSON payloads
+// 2. Middleware
 app.use(express.json());
 
-// 3. Simple Health-Check Route
+// 3. Routes
+app.use('/api/auth', authRoutes);
+
+// 4. Default Route
 app.get('/', (req, res) => {
-    res.json({ 
-        message: "Welcome to Paisa Tracker API Framework", 
-        status: "Running" 
-    });
+    res.json({ message: "API is running" });
 });
 
-// 4. Start the server listener
+// 5. Start Server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
