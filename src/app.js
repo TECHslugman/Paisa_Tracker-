@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
-const connectDB = require('./config/db'); // Ensure this path is correct
-const authRoutes = require('./routes/auth.route'); // Ensure this path is correct
+const connectDB = require('./config/db')
+const authRoutes = require('./routes/auth.route'); 
+const transactionRoutes = require('./routes/transactions.route');
 
 const app = express();
 app.use((req, res, next) => {
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // 3. Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // 4. Default Route
 app.get('/', (req, res) => {
