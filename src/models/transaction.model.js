@@ -5,22 +5,22 @@ const transactionSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      
     },
     raw_sms: { 
       type: String, 
-      required: true 
+      
     },
 
     type: { 
       type: String, 
       enum: ["debit", "credit"], 
-      required: true 
+     
     },
 
     amount: { 
       type: Number, 
-      required: true 
+      
     },
 
     currency: { 
@@ -36,12 +36,12 @@ const transactionSchema = new mongoose.Schema(
 
     timestamp: { 
       type: Date, 
-      required: true 
+      
     },
 
     account_last4: { 
       type: String, 
-      required: true 
+     
     },
 
     balance_after: { 
@@ -59,7 +59,6 @@ const transactionSchema = new mongoose.Schema(
     source: { 
       type: String, 
       enum: ["mpay_sms", "manual"], 
-      required: true 
     },
 
   },
