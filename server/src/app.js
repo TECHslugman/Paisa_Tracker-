@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const connectDB = require('./config/db')
 const authRoutes = require('./routes/auth.route'); 
 const transactionRoutes = require('./routes/transactions.route');
 
 const app = express();
+app.use(cors());
 app.use((req, res, next) => {
     console.log(`DEBUG: Request received at ${req.path}`);
     next();
