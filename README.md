@@ -1,71 +1,117 @@
-# 💰 Paisa Tracker
+# Paisa Tracker
 
-Paisa Tracker is a comprehensive personal finance management application designed to provide users with clear insights into their spending habits, budget projections, and transaction history. Built to simplify financial tracking, it combines manual entry with intelligent data analysis.
-
-## 🚀 Features
-- **Dashboard Overview:** Real-time summary of today’s spending, weekly averages, and monthly budget progress.
-- **Financial Projections:** Predictive analytics to show where your budget will stand at the end of the month based on current trends.
-- **Transaction Management:** Add, view, and manage your financial records manually (with future support for automated SMS parsing).
-- **Largest Expense Tracking:** Automatically highlight and identify your biggest monthly financial commitments.
-- **Secure Authentication:** JWT-based secure user authentication ensuring your financial data stays private.
-
-## 🛠 Technical Stack
-- **Frontend:** React Native (Expo) with Expo Router for navigation, Zustand for state management, and Axios/Fetch for API communication.
-- **Backend:** Node.js & Express.js.
-- **Database:** MongoDB with Mongoose ODM.
-- **Authentication:** JSON Web Tokens (JWT).
-- **UI/UX:** NativeWind/StyleSheet with custom iconography via `lucide-react-native`.
-
-## 📖 How It Came To Be
-Paisa Tracker was born out of a need for a localized, simplified finance tool. Often, complex banking apps are cluttered with unnecessary features. The goal here was to create a "zero-distraction" interface that focuses strictly on the user's cash flow, helping them make better financial decisions through simple, actionable data.
-
-## 🏗 Project Architecture
-
-
-## 🔮 Future Scope
-- **Automated SMS Parsing:** Integration of background tasks to automatically read transaction notifications and log them into the system.
-- **Data Visualization:** Enhanced charts and graphs using Victory Native or Skia for better budget visualization.
-- **Multi-Account Support:** Ability to track different bank accounts or wallets separately.
-- **Export Capabilities:** CSV/PDF export for monthly financial reporting.
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- MongoDB Atlas account or local MongoDB instance
-- Expo Go (for mobile testing)
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/yourusername/paisa-tracker.git](https://github.com/yourusername/paisa-tracker.git)
-
-Setup Server:
-
-Bash
-cd server
-npm install
-# Create .env file with your PORT and MONGO_URI
-npm start
-Setup Frontend:
-
-Bash
-cd frontend
-npm install
-# Update your IP address in services/api.ts
-npx expo start
-🤝 Contribution
-Contributions are welcome! Please feel free to open a Pull Request for any improvements or bug fixes.
-
-Built with passion for better financial literacy.
-
+Paisa Tracker is a personal finance management application designed to give users clear visibility into their spending habits, budget projections, and transaction history. Built with simplicity in mind, it combines manual transaction entry with intelligent data analysis to support better financial decision-making.
 
 ---
 
-### Tips for your GitHub Repository:
-1.  **Replace** `yourusername` in the clone link with your actual GitHub username.
-2.  **Add a `LICENSE` file:** If you plan to make it open source, the MIT License is a standard choice.
-3.  **Use the Image Tag:** I included the `` tag, which acts as a placeholder. GitHub does not render these tags dynamically, so you should **replace that tag with an actual diagram** (e.g., a `.png` or `.jpg` flowchart) stored in your repository's `/assets` folder to make it look professional.
+## Features
 
-Does this README cover everything you need, or would you like to add a specific section about
+**Dashboard Overview**
+Real-time summary of today's spending, weekly averages, and monthly budget progress displayed through a clean, distraction-free interface.
+
+**Financial Projections**
+Predictive analytics that estimate end-of-month budget standing based on current daily spending trends.
+
+**Transaction Management**
+Add, view, edit, and delete financial records manually, with future support for automated SMS parsing.
+
+**Largest Expense Tracking**
+Automatic identification and highlighting of the user's biggest monthly financial commitments.
+
+**Secure Authentication**
+JWT-based user authentication ensuring all financial data remains private and user-scoped.
+
+---
+
+## Technical Stack
+
+| Layer       | Technology                                      |
+|-------------|--------------------------------------------------|
+| Frontend    | React Native (Expo), Expo Router, Zustand        |
+| Backend     | Node.js, Express.js                             |
+| Database    | MongoDB, Mongoose                               |
+| UI          | React Native StyleSheet, lucide-react-native    |
+| HTTP Client | Fetch API                                       |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v18 or higher
+- MongoDB Atlas account or a local MongoDB instance
+- Expo Go installed on a physical device or emulator
+
+### Installation
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/paisa-tracker.git
+cd paisa-tracker
+```
+
+**2. Set up the server**
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file in the `server` directory:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+```
+
+Start the server:
+
+```bash
+npm start
+```
+
+**3. Set up the frontend**
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file in the `frontend` directory:
+
+```env
+EXPO_PUBLIC_API_URL=http://<YOUR_IP_ADDRESS>:3000/api
+```
+
+Start the Expo development server:
+
+```bash
+npx expo start
+```
+
+---
+
+## Background
+
+Paisa Tracker was developed in response to a gap in localized, lightweight finance tooling. Most banking applications are feature-heavy and visually cluttered, making day-to-day financial awareness harder than it needs to be. The goal of this project was to create a focused interface that presents only what matters — cash flow — enabling users to make informed financial decisions through simple, actionable data.
+
+---
+
+## Roadmap
+
+- **Automated SMS Parsing** — Background task integration to automatically read and parse transaction notifications from banking SMS messages.
+- **Data Visualization** — Enhanced charts and graphs using Victory Native for richer budget visualization.
+- **Multi-Account Support** — Ability to track multiple bank accounts or digital wallets independently.
+- **Export Capabilities** — CSV and PDF export for monthly financial reporting and record-keeping.
+
+---
+
+## Contributing
+
+Contributions are welcome. Please open a pull request for any improvements or bug fixes, and ensure changes are well-documented before submission.
+
+---
+
+*Built with a focus on financial literacy and simplicity.*
