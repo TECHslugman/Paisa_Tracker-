@@ -1,13 +1,13 @@
 // frontend/components/features/home/ProjectionCard.tsx
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { TrendingUp } from "lucide-react-native";
+import { TrendingUp, Calendar, Target, Wallet } from "lucide-react-native";
 import { BaseText } from "../../common/BaseText";
 
 interface Props {
-  currentDailyAvg: number;
-  daysRemaining: number;
-  projectedMonthEnd: number;
+  currentDailyAvg: number | string;
+  daysRemaining: number | string;
+  projectedMonthEnd: number | string;
 }
 
 export const ProjectionCard = ({
@@ -15,36 +15,61 @@ export const ProjectionCard = ({
   daysRemaining,
   projectedMonthEnd,
 }: Props) => {
+  // Defensive programming: Convert to number and default to 0 to prevent toFixed crashes
+  const dailyAvg = Number(currentDailyAvg) || 0;
+  const projected = Number(projectedMonthEnd) || 0;
+  const daysLeft = Number(daysRemaining) || 0;
+
+  const isOverBudget = projected > 3650;
+
   return (
     <View style={styles.card}>
-      <View style={styles.titleRow}>
-        <TrendingUp size={15} color="#66BB6A" />
-        <BaseText style={styles.title}>PROJECTION</BaseText>
+      <View style={styles.headerRow}>
+        <View style={styles.titleContainer}>
+          <TrendingUp size={18} color="#2E7D32" />
+          <BaseText style={styles.title}>Month End Projection</BaseText>
+        </View>
+        <View style={[
+          styles.statusBadge,
+          isOverBudget ? styles.statusBadgeWarning : styles.statusBadgeSuccess
+        ]}>
+          <BaseText style={styles.statusText}>
+            {isOverBudget ? 'At Risk' : 'On Track'}
+          </BaseText>
+        </View>
       </View>
 
       <View style={styles.divider} />
 
-      <View style={styles.row}>
-        <BaseText style={styles.rowLabel}>Current Daily Avg</BaseText>
-        <BaseText style={styles.rowValue}>
-          Nu {currentDailyAvg.toFixed(2)}
-        </BaseText>
-      </View>
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Wallet size={16} color="#2E7D32" />
+          <BaseText style={styles.statLabel}>Daily Avg</BaseText>
+          <BaseText style={styles.statValue}>
+            Nu {dailyAvg.toFixed(2)}
+          </BaseText>
+        </View>
 
-      <View style={styles.divider} />
+        <View style={styles.statDivider} />
 
-      <View style={styles.row}>
-        <BaseText style={styles.rowLabel}>Days Remaining</BaseText>
-        <BaseText style={styles.rowValue}>{daysRemaining}</BaseText>
-      </View>
+        <View style={styles.statItem}>
+          <Calendar size={16} color="#2E7D32" />
+          <BaseText style={styles.statLabel}>Days Left</BaseText>
+          <BaseText style={styles.statValue}>{daysLeft}</BaseText>
+        </View>
 
-      <View style={styles.divider} />
+        <View style={styles.statDivider} />
 
-      <View style={styles.row}>
-        <BaseText style={styles.rowLabel}>Projected Month End</BaseText>
-        <BaseText style={styles.rowValueGreen}>
-          Nu {projectedMonthEnd.toFixed(2)}
-        </BaseText>
+        <View style={styles.statItem}>
+          <Target size={16} color="#2E7D32" />
+          <BaseText style={styles.statLabel}>Projected</BaseText>
+          <BaseText style={[
+            styles.statValue,
+            isOverBudget ? styles.statValueWarning : styles.statValueSuccess
+          ]}>
+            Nu {projected.toFixed(2)}
+          </BaseText>
+        </View>
       </View>
     </View>
   );
@@ -52,47 +77,78 @@ export const ProjectionCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#1A1A1A",
-    borderRadius: 16,
-    padding: 18,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E8F5E9",
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
-    marginBottom: 14,
   },
   title: {
+    fontSize: 14,
+    color: "#1B5E20",
+    fontWeight: "600",
+  },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  statusBadgeSuccess: {
+    backgroundColor: "#E8F5E9",
+  },
+  statusBadgeWarning: {
+    backgroundColor: "#FFEBEE",
+  },
+  statusText: {
     fontSize: 11,
-    color: "#66BB6A",
-    letterSpacing: 1.5,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   divider: {
     height: 1,
-    backgroundColor: "#2A2A2A",
+    backgroundColor: "#F0F0F0",
     marginBottom: 12,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  rowLabel: {
-    fontSize: 13,
-    color: "#888",
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
   },
-  rowValue: {
-    fontSize: 14,
-    color: "#FFFFFF",
+  statLabel: {
+    fontSize: 11,
+    color: "#999",
     fontWeight: "500",
   },
-  rowValueGreen: {
-    fontSize: 16,
-    color: "#66BB6A",
-    fontWeight: "500",
-    letterSpacing: -0.3,
+  statValue: {
+    fontSize: 15,
+    color: "#1B5E20",
+    fontWeight: "600",
+  },
+  statValueSuccess: {
+    color: "#2E7D32",
+  },
+  statValueWarning: {
+    color: "#E53935",
+  },
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: "#F0F0F0",
   },
 });
