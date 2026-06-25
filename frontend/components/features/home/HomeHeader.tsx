@@ -3,7 +3,6 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Bell, LogOut } from "lucide-react-native";
 import { BaseText } from "../../common/BaseText";
-import { LinearGradient } from 'expo-linear-gradient';
 
 interface Props {
   name?: string;
@@ -13,140 +12,178 @@ interface Props {
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
 };
+
+const GREEN      = "#2E7D32";
+const TEXT       = "#1A1A1A";
+const MUTED      = "#757575";
+const BORDER     = "#E0E0E0";
 
 export const HomeHeader = ({ name = "there", onLogout, isSticky = false }: Props) => {
   const firstName = name.split(" ")[0];
+  const initial   = firstName.charAt(0).toUpperCase();
 
   return (
     <View style={[styles.container, isSticky && styles.stickyContainer]}>
+      {/* Top row */}
       <View style={styles.topRow}>
+        {/* Left — avatar + app name */}
         <View style={styles.logoRow}>
-          <LinearGradient
-            colors={['#2E7D32', '#43A047']}
-            style={styles.avatarRing}
-          >
-            <BaseText style={styles.avatarLetter}>
-              {firstName.charAt(0).toUpperCase()}
-            </BaseText>
-          </LinearGradient>
-          <BaseText style={styles.appName}>Paisa Tracker</BaseText>
+          <View style={styles.avatar}>
+            <BaseText style={styles.avatarLetter}>{initial}</BaseText>
+          </View>
+          <View>
+            <BaseText style={styles.appName}>Paisa Tracker</BaseText>
+            <BaseText style={styles.appTagline}>Personal Finance</BaseText>
+          </View>
         </View>
-        <View style={styles.rightActions}>
+
+        {/* Right — actions */}
+        <View style={styles.actions}>
           <TouchableOpacity style={styles.iconBtn}>
-            <Bell size={20} color="#2E7D32" />
-            <View style={styles.notificationDot} />
+            <Bell size={18} color={GREEN} strokeWidth={1.8} />
+            <View style={styles.notifDot} />
           </TouchableOpacity>
           {onLogout && (
-            <TouchableOpacity 
-              style={styles.iconBtn} 
+            <TouchableOpacity
+              style={styles.iconBtn}
               onPress={onLogout}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <LogOut size={20} color="#2E7D32" />
+              <LogOut size={18} color={MUTED} strokeWidth={1.8} />
             </TouchableOpacity>
           )}
         </View>
       </View>
 
-      <View style={styles.greetingContainer}>
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* Greeting */}
+      <View style={styles.greetingRow}>
         <BaseText style={styles.greeting}>
           {getGreeting()}, {firstName}
         </BaseText>
-        <BaseText style={styles.sub}>
-          Here is your financial snapshot for today
-        </BaseText>
+        <View style={styles.datePill}>
+          <BaseText style={styles.dateText}>
+            {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+          </BaseText>
+        </View>
       </View>
+      <BaseText style={styles.sub}>Your financial snapshot for today</BaseText>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 8,
+    marginBottom: 16,
   },
   stickyContainer: {
     marginBottom: 0,
   },
+
   topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 14,
   },
   logoRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
   },
-  avatarRing: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: GREEN,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: '#2E7D32',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
   },
   avatarLetter: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#FFFFFF",
     fontWeight: "700",
   },
   appName: {
-    fontSize: 18,
-    color: "#1B5E20",
+    fontSize: 15,
+    color: TEXT,
+    fontWeight: "700",
+    letterSpacing: -0.2,
+  },
+  appTagline: {
+    fontSize: 11,
+    color: MUTED,
+    fontWeight: "400",
+    marginTop: 1,
+  },
+
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 9,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: BORDER,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notifDot: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#E53935",
+    borderWidth: 1.5,
+    borderColor: "#FFFFFF",
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#F0F0F0",
+    marginBottom: 14,
+  },
+
+  greetingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  greeting: {
+    fontSize: 20,
+    color: TEXT,
     fontWeight: "700",
     letterSpacing: -0.3,
   },
-  rightActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  datePill: {
+    backgroundColor: "#F1F8F1",
+    borderWidth: 1,
+    borderColor: "#C8E6C9",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-  iconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  notificationDot: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#E53935',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-  },
-  greetingContainer: {
-    marginTop: 4,
-  },
-  greeting: {
-    fontSize: 22,
-    color: "#1B5E20",
-    marginBottom: 4,
-    letterSpacing: -0.3,
+  dateText: {
+    fontSize: 12,
+    color: GREEN,
     fontWeight: "600",
   },
   sub: {
     fontSize: 13,
-    color: "#81C784",
+    color: MUTED,
     fontWeight: "400",
   },
 });

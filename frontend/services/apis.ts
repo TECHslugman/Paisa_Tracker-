@@ -1,6 +1,6 @@
 // frontend/services/api.ts
 
-const BASE_URL = 'http://10.173.141.52:3000/api'; 
+const BASE_URL = 'http://10.119.49.52:3000/api'; 
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const headers = {

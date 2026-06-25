@@ -1,15 +1,17 @@
 // frontend/app/(tabs)/home.tsx
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   StyleSheet,
   Alert,
-  Animated,
+  ScrollView,
+  RefreshControl,
   StatusBar,
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import { useAuthStore } from "../../store/authStore";
 import { transactionService } from "../../services/transactionServices";
 import { HomeHeader } from "../../components/features/home/HomeHeader";
@@ -20,45 +22,60 @@ import { LargestExpense } from "../../components/features/home/LargestExpense";
 export default function Home() {
   const router = useRouter();
   const { logout } = useAuthStore();
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await transactionService.getHomeSummary();
-        setData(result);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (err) {
-        Alert.alert("Error", "Failed to load summary");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+  const [data, setData]           = useState<any>(null);
+  const [loading, setLoading]     = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    try {
+      const result = await transactionService.getHomeSummary();
+      setData(result);
+    } catch {
+      Alert.alert("Error", "Failed to load summary");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
+
+  // Refetch every time the tab gains focus — picks up new transactions immediately
+  useFocusEffect(useCallback(() => { fetchData(); }, [fetchData]));
+
+  const onRefresh = () => { setRefreshing(true); fetchData(true); };
 
   const handleLogout = async () => {
     await logout();
     router.replace("/(auth)/login");
   };
 
-  if (loading)
+  if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#2E7D32" />
       </View>
     );
+  }
+
   if (!data) return null;
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <StatusBar barStyle="dark-content" backgroundColor="#F5F9F5" />
 
-      <Animated.ScrollView
+      <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#2E7D32"
+            colors={["#2E7D32"]}
+          />
+        }
       >
         <HomeHeader name="User" onLogout={handleLogout} />
 
@@ -101,15 +118,15 @@ export default function Home() {
           type={data.largestExpense?.type || "debit"}
           referenceId={data.largestExpense?.reference_id || "N/A"}
         />
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#F5F9F5" },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+  screen:        { flex: 1, backgroundColor: "#F5F9F5" },
+  centered:      { flex: 1, justifyContent: "center", alignItems: "center" },
   scrollContent: { paddingHorizontal: 16, paddingBottom: 40, paddingTop: 12 },
-  statsGrid: { flexDirection: "row", gap: 12, marginBottom: 12 },
-  gridItem: { flex: 1 },
+  statsGrid:     { flexDirection: "row", gap: 12, marginBottom: 12 },
+  gridItem:      { flex: 1 },
 });

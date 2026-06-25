@@ -3,34 +3,27 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Calendar, BarChart2, CalendarDays, ArrowUp, ArrowDown } from "lucide-react-native";
 import { BaseText } from "../../common/BaseText";
-import { LinearGradient } from "expo-linear-gradient";
 
 interface SpendingCardProps {
   type: "today" | "weekly" | "monthly";
   amount: number;
   subLabel: string;
   budgetPercent?: number;
-  weeklyTotal?: number;       // new
-  totalTransactions?: number; // new
+  weeklyTotal?: number;
+  totalTransactions?: number;
 }
 
 const config = {
-  today: {
-    label: "Today's Spending",
-    icon: (color: string) => <Calendar size={18} color={color} />,
-    gradient: ["#E8F5E9", "#C8E6C9"],
-  },
-  weekly: {
-    label: "Weekly Average",
-    icon: (color: string) => <BarChart2 size={18} color={color} />,
-    gradient: ["#E3F2FD", "#BBDEFB"],
-  },
-  monthly: {
-    label: "Monthly Total",
-    icon: (color: string) => <CalendarDays size={18} color={color} />,
-    gradient: ["#FFF3E0", "#FFE0B2"],
-  },
+  today:   { label: "Today",          icon: (c: string) => <Calendar size={14} color={c} /> },
+  weekly:  { label: "Weekly Average", icon: (c: string) => <BarChart2 size={14} color={c} /> },
+  monthly: { label: "This Month",     icon: (c: string) => <CalendarDays size={14} color={c} /> },
 };
+
+const GREEN = "#2E7D32";
+const RED   = "#C62828";
+const TEXT  = "#1A1A1A";
+const MUTED = "#757575";
+const BORDER = "#E0E0E0";
 
 export const SpendingCard = ({
   type,
@@ -40,111 +33,72 @@ export const SpendingCard = ({
   weeklyTotal,
   totalTransactions,
 }: SpendingCardProps) => {
-  const { label, icon, gradient } = config[type];
+  const { label, icon } = config[type];
   const isOverBudget = (budgetPercent ?? 0) > 80;
   const isGrid = type === "today" || type === "weekly";
 
   const formatAmount = (val: number) =>
-    `Nu ${val.toLocaleString("en-IN", {
-      minimumFractionDigits: val % 1 === 0 ? 0 : 2,
-    })}`;
+    `Nu. ${val.toLocaleString("en-IN", { minimumFractionDigits: val % 1 === 0 ? 0 : 2 })}`;
 
   return (
     <View style={[styles.card, isGrid && styles.gridCard]}>
-      <LinearGradient
-        colors={gradient as any}
-        style={styles.gradientBg}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      />
-
-      <View style={styles.content}>
-        {/* Top row — label + icon */}
-        <View style={styles.topRow}>
-          <View style={styles.labelContainer}>
-            {icon(isOverBudget ? "#E53935" : "#2E7D32")}
-            <BaseText style={styles.label}>{label}</BaseText>
-          </View>
-          {type === "monthly" && (
-            <View
-              style={[
-                styles.trendBadge,
-                isOverBudget ? styles.trendBadgeDown : styles.trendBadgeUp,
-              ]}
-            >
-              {isOverBudget ? (
-                <ArrowDown size={12} color="#E53935" />
-              ) : (
-                <ArrowUp size={12} color="#2E7D32" />
-              )}
-              <BaseText
-                style={[
-                  styles.trendText,
-                  isOverBudget ? styles.trendTextDown : styles.trendTextUp,
-                ]}
-              >
-                {isOverBudget ? "Over" : "Under"}
-              </BaseText>
-            </View>
-          )}
+      {/* Top row */}
+      <View style={styles.topRow}>
+        <View style={styles.labelRow}>
+          {icon(MUTED)}
+          <BaseText style={styles.label}>{label}</BaseText>
         </View>
-
-        {/* Main amount */}
-        <BaseText
-          style={[
-            styles.amount,
-            isOverBudget && styles.amountRed,
-            isGrid && styles.gridAmount,
-          ]}
-        >
-          {formatAmount(amount)}
-        </BaseText>
-
-        {/* Sub label */}
-        <BaseText style={styles.sub}>{subLabel}</BaseText>
-
-        {/* Weekly total — only on weekly card */}
-        {type === "weekly" && weeklyTotal !== undefined && (
-          <View style={styles.extraRow}>
-            <View style={styles.dividerLine} />
-            <View style={styles.extraItem}>
-              <BaseText style={styles.extraLabel}>Weekly total</BaseText>
-              <BaseText style={styles.extraValue}>
-                {formatAmount(weeklyTotal)}
-              </BaseText>
-            </View>
-          </View>
-        )}
-
-        {/* Total transactions — on today and monthly */}
-        {totalTransactions !== undefined && type !== "weekly" && (
-          <View style={styles.extraRow}>
-            <View style={styles.dividerLine} />
-            <View style={styles.extraItem}>
-              <BaseText style={styles.extraLabel}>Transactions</BaseText>
-              <BaseText style={styles.extraValue}>{totalTransactions}</BaseText>
-            </View>
-          </View>
-        )}
-
-        {/* Progress bar — monthly only */}
-        {type === "monthly" && budgetPercent !== undefined && (
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBg}>
-              <View
-                style={[
-                  styles.progressFill,
-                  {
-                    width: `${Math.min(budgetPercent, 100)}%` as any,
-                    backgroundColor: isOverBudget ? "#E53935" : "#2E7D32",
-                  },
-                ]}
-              />
-            </View>
-            <BaseText style={styles.progressText}>{budgetPercent}% used</BaseText>
+        {type === "monthly" && (
+          <View style={[styles.trendBadge, isOverBudget ? styles.trendRed : styles.trendGreen]}>
+            {isOverBudget
+              ? <ArrowDown size={11} color={RED} />
+              : <ArrowUp size={11} color={GREEN} />}
+            <BaseText style={[styles.trendText, { color: isOverBudget ? RED : GREEN }]}>
+              {isOverBudget ? "Over" : "Under"}
+            </BaseText>
           </View>
         )}
       </View>
+
+      {/* Amount */}
+      <BaseText style={[styles.amount, isGrid && styles.amountGrid, isOverBudget && { color: RED }]}>
+        {formatAmount(amount)}
+      </BaseText>
+      <BaseText style={styles.sub}>{subLabel}</BaseText>
+
+      {/* Weekly total */}
+      {type === "weekly" && weeklyTotal !== undefined && (
+        <View style={styles.extraRow}>
+          <BaseText style={styles.extraLabel}>Weekly total</BaseText>
+          <BaseText style={styles.extraValue}>{formatAmount(weeklyTotal)}</BaseText>
+        </View>
+      )}
+
+      {/* Transaction count */}
+      {totalTransactions !== undefined && type !== "weekly" && (
+        <View style={styles.extraRow}>
+          <BaseText style={styles.extraLabel}>Transactions</BaseText>
+          <BaseText style={styles.extraValue}>{totalTransactions}</BaseText>
+        </View>
+      )}
+
+      {/* Progress bar — monthly only */}
+      {type === "monthly" && budgetPercent !== undefined && (
+        <View style={styles.progressWrap}>
+          <View style={styles.progressBg}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${Math.min(budgetPercent, 100)}%` as any,
+                  backgroundColor: isOverBudget ? RED : GREEN,
+                },
+              ]}
+            />
+          </View>
+          <BaseText style={styles.progressText}>{budgetPercent}% used</BaseText>
+        </View>
+      )}
     </View>
   );
 };
@@ -152,114 +106,77 @@ export const SpendingCard = ({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    overflow: "hidden",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: BORDER,
+    padding: 14,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
   },
   gridCard: {
     flex: 1,
     marginBottom: 0,
   },
-  gradientBg: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.5,
-  },
-  content: {
-    padding: 16,
-  },
   topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 10,
   },
-  labelContainer: {
+  labelRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   label: {
     fontSize: 12,
-    color: "#555",
+    color: MUTED,
     fontWeight: "500",
-    letterSpacing: 0.2,
   },
   trendBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    gap: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 8,
   },
-  trendBadgeUp: { backgroundColor: "#E8F5E9" },
-  trendBadgeDown: { backgroundColor: "#FFEBEE" },
-  trendText: { fontSize: 10, fontWeight: "600" },
-  trendTextUp: { color: "#2E7D32" },
-  trendTextDown: { color: "#E53935" },
+  trendGreen: { backgroundColor: "#F1F8F1" },
+  trendRed:   { backgroundColor: "#FFEBEE" },
+  trendText:  { fontSize: 11, fontWeight: "600" },
+
   amount: {
-    fontSize: 28,
-    color: "#1B5E20",
-    letterSpacing: -0.5,
-    marginBottom: 4,
+    fontSize: 26,
     fontWeight: "700",
+    color: TEXT,
+    letterSpacing: -0.5,
+    marginBottom: 2,
   },
-  gridAmount: { fontSize: 22 },
-  amountRed: { color: "#E53935" },
+  amountGrid: { fontSize: 20 },
   sub: {
     fontSize: 12,
-    color: "#888",
+    color: MUTED,
   },
 
-  // Extra info row (weekly total / transactions)
   extraRow: {
-    marginTop: 10,
-  },
-  dividerLine: {
-    height: 1,
-    backgroundColor: "rgba(0,0,0,0.06)",
-    marginBottom: 8,
-  },
-  extraItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F0",
   },
-  extraLabel: {
-    fontSize: 11,
-    color: "#999",
-  },
-  extraValue: {
-    fontSize: 12,
-    color: "#444",
-    fontWeight: "500",
-  },
+  extraLabel: { fontSize: 11, color: MUTED },
+  extraValue: { fontSize: 12, color: TEXT, fontWeight: "600" },
 
-  // Progress
-  progressContainer: { marginTop: 12 },
+  progressWrap: { marginTop: 12 },
   progressBg: {
-    height: 6,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 3,
+    height: 4,
+    backgroundColor: "#F0F0F0",
+    borderRadius: 2,
     overflow: "hidden",
-    marginBottom: 6,
+    marginBottom: 5,
   },
-  progressFill: {
-    height: "100%",
-    borderRadius: 3,
-  },
-  progressText: {
-    fontSize: 11,
-    color: "#888",
-    textAlign: "right",
-  },
+  progressFill: { height: "100%", borderRadius: 2 },
+  progressText:  { fontSize: 11, color: MUTED, textAlign: "right" },
 });
