@@ -1,6 +1,6 @@
 // frontend/services/api.ts
 
-const BASE_URL = 'http://paisatrackerbackend-plum.vercel.app/api';
+const BASE_URL = 'https://paisatrackerbackend-plum.vercel.app/api';
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const headers = {
