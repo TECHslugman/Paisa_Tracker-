@@ -33,10 +33,10 @@ exports.createTransaction = async (req, res) => {
 };
 exports.getTransactions = async (req, res) => {
   try {
-    // To all transactions where the 'user' field matches the ID 
+    console.log("DEBUG user id:", req.user?.id);
     const transactions = await Transaction.find({ 
       user: req.user.id }).sort({ timestamp: -1 });
-
+    console.log("DEBUG transactions found:", transactions.length);
     res.json(transactions);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch transactions" });

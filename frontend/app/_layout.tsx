@@ -2,6 +2,7 @@
 import { useEffect, useCallback, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useAuthStore } from "../store/authStore";
+import { View, ActivityIndicator } from "react-native";
 
 export default function RootLayout() {
   const { isAuthenticated, loadAuth } = useAuthStore();
@@ -28,6 +29,15 @@ export default function RootLayout() {
       router.replace("/(auth)/login");
     }
   }, [isAuthenticated, segments, router, mounted]);
+
+  // Wait until auth state is loaded before rendering anything
+  if (!mounted) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#F5F9F5" }}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+      </View>
+    );
+  }
 
   return (
     <Stack screenOptions={{ headerShown: false }} />

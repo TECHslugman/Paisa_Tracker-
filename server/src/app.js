@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db')
 const authRoutes = require('./routes/auth.route'); 
 const transactionRoutes = require('./routes/transactions.route');
+const smsRoutes = require('./routes/sms.route');
 
 const app = express();
 app.use(cors());
@@ -22,13 +23,18 @@ app.use(express.json());
 // 3. Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/sms', smsRoutes);
 
 // 4. Default Route
 app.get('/', (req, res) => {
     res.json({ message: "API is running" });
 });
 
-// 5. Start Server
-app.listen(PORT, () => {
+// 5. Start Server — only runs locally, not on Vercel
+if (require.main === module) {
+  app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-});
+  });
+}
+
+module.exports = app;

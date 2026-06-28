@@ -1,5 +1,6 @@
 // frontend/components/features/LoginForm.tsx
 import React, { useState } from "react";
+import { saveUserId } from '../../../utils/sharedPrefs';
 import { useRouter } from "expo-router";
 import {
   View,
@@ -38,6 +39,7 @@ export const LoginForm = () => {
     try {
       const response = await authService.login(formData);
       await saveAuth(response.token);
+      saveUserId(response.userId);
       setSuccess(true);
       setTimeout(() => {
         router.replace("/(tabs)/home");
