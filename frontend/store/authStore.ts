@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   saveAuth: (token: string) => Promise<void>;
   loadAuth: () => Promise<void>;
   logout: () => Promise<void>;
@@ -13,6 +14,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   isAuthenticated: false,
+  isLoading: true,
 
   saveAuth: async (token) => {
     await AsyncStorage.setItem("token", token);
@@ -20,9 +22,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   loadAuth: async () => {
-    const token = await AsyncStorage.getItem("token");
-    if (token) {
-      set({ token, isAuthenticated: true });
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        set({ token, isAuthenticated: true, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
+    } catch {
+      set({ isLoading: false });
     }
   },
 
